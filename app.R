@@ -4,7 +4,7 @@ library(shiny)
 library(dplyr)
 library(googlesheets)
 library(jsonlite)
-library(rjson)
+# library(rjson)
 library(data.tree)
 
 ## ======================

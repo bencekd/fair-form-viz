@@ -1,0 +1,58 @@
+body{
+	background-color: #4d5359;
+	height: 100%;
+}
+
+#main-container .container-fluid{
+	height: 100%;
+}
+
+#main-container .container-box{
+	height: 500px;
+}
+
+.container-box .well{
+	box-shadow: 2px 2px 21px -5px rgba(0,0,0,0.61);
+}
+
+.container-box .well, .container-box .well div{
+	height: 100%;
+}
+
+#main-container .well{
+	background-color: #757575;
+}
+
+#main-container .row{
+	display: inline;
+	height: 30%;
+}
+
+.axis line,
+.axis path {
+  shape-rendering: crispEdges;
+  fill: transparent;
+  stroke: #555;
+}
+.axis text {
+  font-size: 11px;
+}
+
+.bar.left {
+  fill: #01baef;
+}
+.bar.right {
+  fill: #f8333c;
+}
+
+#shiny_map { height: 400px; }
+
+.treemapText, .treemapValue{
+	fill: white;
+	font-size: 34px;
+}
+
+.treemapValue{
+	font-size: 62px;
+	font-weight: bold;
+}
