@@ -2,6 +2,7 @@ setwd("C:/Work/Hifly/recruiting/integration")
 
 library(shiny)
 library(dplyr)
+library(tidyr)
 library(googlesheets)
 library(jsonlite)
 # library(rjson)

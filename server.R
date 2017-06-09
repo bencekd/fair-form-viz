@@ -1,8 +1,7 @@
 shinyServer(function(input, output, session) {  
   ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
   ss_dat <- gs_read(ss)
-  names(ss_dat) <- c("timestamp", "gender", "citytype", "county", "age", "field", "seriesmovie", "starwarstrek", "lordofthrones", "freetime", "bored")
-  
+  names(ss_dat) <- c("timestamp", "gender", "citytype", "county", "age", "field", "seriesmovie", "starwarstrek", "lordofthrones", "freetime", "bored")  
   ### init rowcounter for trigger plots ###
   row <- reactiveValues(count = 0)
   
@@ -37,16 +36,21 @@ shinyServer(function(input, output, session) {
   ### GENDER PIE ###
   observeEvent(row$count, {
     
-    agegender <- group_by(ss_dat, gender, age) %>%
-      summarise(count = n())
+    agegender <- mutate(ss_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
+      mutate(gender=replace(gender, gender=="Nő", "female")) %>%
+      group_by(age, gender) %>%    
+      summarise(n = n()) %>% 
+      spread(gender, n)
     
     citytype <- group_by(ss_dat, citytype) %>%
       summarise(count = n())
     
     county <- group_by(ss_dat, county) %>%
-      summarise(count = n())
+      summarise(count = n()) %>%
+      mutate(freq = count / sum(count))
     
     field <- group_by(ss_dat, field) %>%
+      select(name = field) %>%
       summarise(count = n())
     
     seriesmovie <- group_by(ss_dat, seriesmovie) %>%
