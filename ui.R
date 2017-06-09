@@ -17,6 +17,10 @@ shinyUI(
 	  		tags$img(src= "img/logo-white.png", class="headerLogo")
 	  		)
 	  	),
+	  fluidRow(
+	    column(12, offset = 10, 
+	           radioButtons("divider", "Kitöltők típusa:", c("Mindenki" = 0, "Újonnan kitöltők" = 1)))
+	  ),
 	  fluidRow(class = "fullRow",
 	    column(6,
 	    	wellPanel(
