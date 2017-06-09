@@ -8,11 +8,6 @@ html, body{
 	height: 100%;
 }
 
-.headerLogo{
-	height: 100%;
-	padding: 40px;
-}
-
 #main-container .container-box.well{
 	box-shadow: 2px 2px 21px -5px rgba(0,0,0,0.61);
 }
@@ -23,7 +18,7 @@ html, body{
 
 #main-container .well{
 	background-color: #757575;
-}
+} 
 
 .axis line,
 .axis path {
@@ -76,7 +71,12 @@ html, body{
 }
 
 .fullRow > div{
-	height: 100%;
+	height: calc(100% - 100px);
+}
+
+.fullRow .boxTitle{
+	height: 100px;
+	font-size: 65px;
 }
 
 .fullRow > div > div{
@@ -85,4 +85,18 @@ html, body{
 
 .headerLogoCont{
 	height: 200px;
+}
+
+.headerLogo{
+	height: 100%;
+	padding: 40px;
+	float: left;
+}
+
+.headerText{
+	line-height: 100%;
+	font-size: 72px;
+	padding: 40px;
+	padding-left: 60px;
+	text-anchor: middle;
 }
