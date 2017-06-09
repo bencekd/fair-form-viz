@@ -12,10 +12,12 @@ shinyUI(
 	      tags$script(src= "js/hungaryGEO.js")
 	      # tags$script(src= "d3_demochart.js")
 	    ),
-	  titlePanel(
-	  	tags$img(src= "img/logo-white.png")
-	  	),
 	  fluidRow(
+	  	column(12, class= "pull-left headerLogoCont", 
+	  		tags$img(src= "img/logo-white.png", class="headerLogo")
+	  		)
+	  	),
+	  fluidRow(class = "fullRow",
 	    column(6,
 	    	wellPanel(
 	    		tags$div(id="shiny_map"), class="container-box")
@@ -25,22 +27,15 @@ shinyUI(
 	    		tags$div(id="shiny_agegender"), class="container-box")
 	    	)
 	  ),
-	  fluidRow(
+	  fluidRow(class = "fullRow",
 	    column(6,
 	    	wellPanel(
 	    		tags$div(id="shiny_field"), class="container-box")
 	    	),
 	    column(6,
 	    	wellPanel(
-	    		tags$div(), class="container-box")
+	    		tags$div(id="shiny_hobbies"), class="container-box")
 	    	)
-	  ),
-	  fluidRow(
-	    column(6,tags$div(), class="container-box"),
-	    column(6,tags$div(id="shiny_freetime"), class="container-box")
-	  ),
-	  fluidRow(
-	    column(12,tags$div(id="shiny_hobby"), class="container-box")
 	  ),
 	  tags$script(src= "js/visualizations.js")
 	)

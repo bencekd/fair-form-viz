@@ -17,7 +17,6 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 
     var w = $("#" + ageShinyID)[0].clientWidth;
     var h = $("#" + ageShinyID)[0].clientHeight;
-    console.log(h);
 
     svg.attr("width", w);
     svg.attr("height", h);
@@ -34,7 +33,6 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 
     var innerHeight = h - margin.top - margin.bottom - 40;
     var regionWidth = w / 2;
-    console.log(innerHeight);
 
     var pointA = regionWidth,
         pointB = w - regionWidth;
@@ -94,6 +92,7 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 
     var leftBarGroup = svg.append('g')
         .attr('transform', translation(pointA, 0) + 'scale(-1,1)');
+
     var rightBarGroup = svg.append('g')
         .attr('transform', translation(pointB, 0));
 
@@ -124,10 +123,11 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         .attr('y', function(d) {
             return yScale(d.age) - ((yScale.step() - 20) / 2);
         })
+        .attr('height', yScale.step() - 20)
+        .transition().duration(1000).delay(500)
         .attr('width', function(d) {
             return xScale(percentage(d.male));
-        })
-        .attr('height', yScale.step() - 20);
+        });
 
     rightBarGroup.selectAll('.bar.right')
         .data(data)
@@ -137,10 +137,11 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         .attr('y', function(d) {
             return yScale(d.age) - ((yScale.step() - 20) / 2);
         })
+        .attr('height', yScale.step() - 20)
+        .transition().duration(1000).delay(500)
         .attr('width', function(d) {
             return xScale(percentage(d.female));
-        })
-        .attr('height', yScale.step() - 20);
+        });
 
     // DRAW MIDDLE LINE
     svg.append('line')
@@ -165,7 +166,7 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 const mapShinyID = "shiny_map";
 const colorScale = ["#F9DC5C", "#ED254E"];
 
-var map = L.map(mapShinyID).setView([47.1567835, 19.6133071], 7);
+var map = L.map(mapShinyID).setView([47.1567835, 19.6133071], 8);
 var w = $("#" + mapShinyID)[0].clientWidth;
 var h = $("#" + mapShinyID)[0].clientHeight;
 
@@ -202,6 +203,7 @@ Shiny.addCustomMessageHandler("json_county", function(message) {
         .range([d3.rgb(colorScale[0]), d3.rgb(colorScale[1])]);
 
     L.geoJson(hungaryGEO, {
+    	className: 
         style: function(feature) { // Style option
             return {
                 'weight': 1.5,
@@ -253,7 +255,6 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
 
     var root = d3.hierarchy(data)
         .eachBefore(function(d) {
-        	console.log(d);
             d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name;
         })
         .sum(sumBySize)
@@ -261,14 +262,13 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
             return b.height - a.height || b.value - a.value;
         });
 
-    console.log(JSON.stringify(data));
-
     root.parent = "main";
     treemap(root);
 
     var cell = svg.selectAll("g")
         .data(root.leaves())
         .enter().append("g")
+        .attr("class", "rectG")
         .attr("transform", function(d) {
             return "translate(" + d.x0 + "," + d.y0 + ")";
         });
@@ -277,14 +277,17 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .attr("id", function(d) {
             return d.data.id;
         })
-        .attr("width", function(d) {
-            return d.x1 - d.x0;
+        .attr("fill", function(d) {
+            return color(d.data.id);
         })
+        .attr("height", 40)
+        .attr("width", 40)
+        .transition().duration(1000).delay(500)
         .attr("height", function(d) {
             return d.y1 - d.y0;
         })
-        .attr("fill", function(d) {
-            return color(d.data.id);
+        .attr("width", function(d) {
+            return d.x1 - d.x0;
         });
 
     cell.append("clipPath")
@@ -323,9 +326,12 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .attr("y", function(d, i) {
             return 42 + 42 + i * 36;
         })
+        .style("fill-opacity", 0)
         .text(function(d) {
             return d;
-        });
+        })
+        .transition().delay(1500)
+        .style("fill-opacity", 1);
 
     cell
         .append("text")
@@ -335,15 +341,12 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .attr("dy", function(d) {
             return d.data.name.split(/(?=[A-Z][^A-Z])/g).length * 36 + 2 * 36 + 62 / 2
         })
+        .style("fill-opacity", 0)
         .text(function(d) {
-            console.log(d);
             return d.value
-        });
-
-    cell.append("title")
-        .text(function(d) {
-            return d.data.id + "\n" + format(d.value);
-        });
+        })
+        .transition().delay(1500)
+        .style("fill-opacity", 1);
 
     d3.selectAll("input")
         .data([sumBySize, sumByCount], function(d) {
@@ -383,4 +386,108 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
     function sumBySize(d) {
         return d.size;
     }
+})
+
+/////////////////////////////////
+////  KPI type plot
+/////////////////////////////////
+
+const kpiShinyID = "shiny_hobbies";
+
+Shiny.addCustomMessageHandler("json_hobby", function(message) {
+
+    var svg;
+
+    if ($("#" + kpiShinyID + " > svg").length == 0) {
+        svg = d3.select("#" + kpiShinyID).append("svg");
+    } else {
+        d3.select("#" + kpiShinyID + " > svg").remove();
+        svg = d3.select("#" + kpiShinyID).append("svg");
+    }
+
+    var w = $("#" + kpiShinyID)[0].clientWidth;
+    var h = $("#" + kpiShinyID)[0].clientHeight;
+
+    svg.attr("width", w);
+    svg.attr("height", h);
+
+    var data = message;
+
+    svg = svg
+    	.append("g");
+
+    var scaleToWidth = d3.scaleLinear()
+        .domain([0, 1])
+        .range([0, w]);
+
+    const PADDING_BTWN_BARS = 70;
+    const MAX_DURATION = 4000;
+
+    var barHeight = ((h - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
+
+    // value bar + full bar
+    var bars = svg	
+    	.selectAll(".bar")
+    	.data(data)
+    	.enter();
+
+    	bars
+    	.append("rect")
+    	.attr("height", barHeight)
+    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
+    	.style("fill", "#565554")
+    	.attr("width", w);
+
+    	bars
+    	.append("rect")
+    	.attr("width", 0)
+    	.attr("height", barHeight)
+    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
+    	.style("fill", "#F5F749")
+    	.attr("hello", function(d){ return JSON.stringify(d) })
+    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
+		.attr("width", function(d){ return scaleToWidth(d.rate) });
+
+    	bars
+    	.append("text")
+    	.attr("class", "startText")
+    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
+    	.attr("x", 30)
+    	.style("alignment-baseline", "middle")
+    	.style("font-size", "72px")
+    	.style("font-weight", "bold")
+    	.style("fill", "black")
+    	.text("0%");
+
+    	bars
+    	.append("text")
+    	.attr("class", "endText")
+    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
+    	.attr("x", w - 30)
+    	.style("alignment-baseline", "middle")
+    	.style("text-anchor", "end")
+    	.style("font-size", "72px")
+    	.style("font-weight", "bold")
+    	.style("fill", "white")
+    	.text("100%");
+
+    	bars.selectAll(".endText")
+    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
+    	.tween("text", function(d){
+    		var i = d3.interpolate(1, 1-d.rate);
+    		var that = d3.select(this);
+    		return function(t){
+    			that.text(d3.format(".0%")(i(t)));
+    		}
+    	})
+
+    	bars.selectAll(".startText")
+    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
+    	.tween("text", function(d){
+    		var i = d3.interpolate(0, d.rate);
+    		var that = d3.select(this);
+    		return function(t){
+    			that.text(d3.format(".0%")(i(t)));
+    		}
+    	})
 })

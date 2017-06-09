@@ -4,12 +4,13 @@ html, body{
 	font-family: 'Roboto Condensed', sans-serif;
 }
 
-#main-container .container-fluid{
+#main-container{
 	height: 100%;
 }
 
-#main-container .container-box{
-	height: 500px;
+.headerLogo{
+	height: 100%;
+	padding: 40px;
 }
 
 #main-container .container-box.well{
@@ -22,11 +23,6 @@ html, body{
 
 #main-container .well{
 	background-color: #757575;
-}
-
-#main-container .row{
-	display: inline;
-	height: 30%;
 }
 
 .axis line,
@@ -58,6 +54,10 @@ html, body{
 	height: 100%;
 }
 
+#shiny_hobbies{
+	height: 100%;
+}
+
 .treemapText, .treemapValue{
 	fill: white;
 	font-size: 34px;
@@ -66,4 +66,21 @@ html, body{
 .treemapValue{
 	font-size: 62px;
 	font-weight: bold;
+}
+
+.fullRow{
+	height: calc(50% - 100px);
+	padding: 30px;
+}
+
+.fullRow > div{
+	height: 100%;
+}
+
+.fullRow > div > div{
+	height: 100%;
+}
+
+.headerLogoCont{
+	height: 200px;
 }

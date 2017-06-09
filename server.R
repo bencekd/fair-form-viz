@@ -6,7 +6,7 @@ shinyServer(function(input, output, session) {
   row <- reactiveValues(count = 0)
   
   ### init loop function ###
-  refresher <- reactiveTimer(1000,session)
+  refresher <- reactiveTimer(30000,session)
 
   ### get latest data ###
   observe({
