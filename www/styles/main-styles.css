@@ -32,6 +32,10 @@ html, body{
   stroke: #fff;
 }
 
+.axis.y.left text{
+	font-size: 62px;
+}
+
 .bar.left {
   fill: #0083A8;
 }
@@ -45,9 +49,7 @@ html, body{
 
 #shiny_agegender .axis text{
 	fill: white;
-	font-size: 16px;
 	font-weight: bold;
-	font-family: 'Roboto Condensed', sans-serif;
 }
 
 #shiny_field{

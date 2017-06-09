@@ -1,4 +1,33 @@
 /////////////////////////////////
+////  ICON ASSIGNMENT
+/////////////////////////////////
+
+const iconsAgeGroup = {
+	"18-24": "img/icons/002-library.png",
+	"25-30": "img/icons/002-library.png",
+	"31-36": "img/icons/002-library.png",
+	"37-42": "img/icons/001-medicine-briefcase.png",
+	"43-48": "img/icons/002-library.png",
+	"49-54": "img/icons/002-library.png",
+	"55-60": "img/icons/002-library.png",
+	"60-": "img/icons/002-library.png"
+};
+
+const iconsFields = {
+	"Műszaki": "img/icons/001-medicine-briefcase.png",
+	"Gazdasági": "img/icons/002-library.png",
+	"Jogi": "img/icons/002-library.png",
+	"Társadalomtudományi": "img/icons/002-library.png",
+	"Állami": "img/icons/002-library.png" 
+}
+
+const iconsHobbies = {
+	"Sorozatok": ["img/icons/001-medicine-briefcase.png", "img/icons/002-library.png"],
+	"Star Wars": ["img/icons/002-library.png", "img/icons/002-library.png"],
+	"Gyűrűk ura": ["img/icons/002-library.png", "img/icons/002-library.png"]
+}
+
+/////////////////////////////////
 ////  Korfa / Population pyramid
 /////////////////////////////////
 
@@ -27,7 +56,7 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         top: 40,
         right: 20,
         bottom: 40,
-        left: 50,
+        left: 300,
         middle: 0
     };
 
@@ -44,9 +73,9 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
             return d / totalPopulation;
         };
 
-    svg = svg
+    graph = svg
         .append('g')
-        .attr('transform', translation(0, margin.top));
+        .attr('transform', translation(margin.left, margin.top));
 
     var maxValue = Math.max(
         d3.max(data, function(d) {
@@ -82,37 +111,19 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         .tickSize(0, 0)
         .tickPadding(xScaleRight(maxValue));
 
-    var xAxisRight = d3.axisBottom(xScale)
-        .ticks(5)
-        .tickFormat(d3.format('.0%'));
-
-    var xAxisLeft = d3.axisBottom(xScale.copy().range([pointA, 0]))
-        .ticks(5)
-        .tickFormat(d3.format('.0%'));
-
-    var leftBarGroup = svg.append('g')
+    var leftBarGroup = graph.append('g')
         .attr('transform', translation(pointA, 0) + 'scale(-1,1)');
 
-    var rightBarGroup = svg.append('g')
+    var rightBarGroup = graph.append('g')
         .attr('transform', translation(pointB, 0));
 
     // DRAW AXES
-    svg.append('g')
+    graph.append('g')
         .attr('class', 'axis y left')
         .attr('transform', translation(pointA + 40, 0))
         .call(yAxisLeft)
         .selectAll('text')
         .style('text-anchor', 'middle');
-
-    svg.append('g')
-        .attr('class', 'axis x left')
-        .attr('transform', translation(40, innerHeight + 40))
-        .call(xAxisLeft);
-
-    svg.append('g')
-        .attr('class', 'axis x right')
-        .attr('transform', translation(pointB + 40, innerHeight + 40))
-        .call(xAxisRight);
 
     // DRAW BARS
     leftBarGroup.selectAll('.bar.left')
@@ -143,8 +154,28 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
             return xScale(percentage(d.female));
         });
 
+    // APPEND ICONS
+
+    icons = svg.append("g")
+    	.attr("class", "icons");
+
+    icons.selectAll("icon")
+    	.data(data).enter()
+    	.append("image")
+    	.attr("class", "icon")
+        .attr("xlink:href", function(d) {
+        	console.log(d);
+            return iconsAgeGroup[d.age];
+        })
+        .attr("x", 30)
+        .attr('y', function(d) {
+            return yScale(d.age) - ((yScale.step() - 20) / 2 - 45);
+        })
+        .attr("width", 100)
+        .attr("height", 100);
+
     // DRAW MIDDLE LINE
-    svg.append('line')
+    graph.append('line')
         .attr('x1', pointA + 40)
         .attr('x2', pointA + 40)
         .attr('y1', -40)
@@ -203,13 +234,12 @@ Shiny.addCustomMessageHandler("json_county", function(message) {
         .range([d3.rgb(colorScale[0]), d3.rgb(colorScale[1])]);
 
     L.geoJson(hungaryGEO, {
-    	className: 
         style: function(feature) { // Style option
             return {
                 'weight': 1.5,
                 'color': 'black',
                 'fillColor': color((feature.properties.freq) ? feature.properties.freq : '0'),
-                'fillOpacity': 0.7
+                'fillOpacity': 0.9
             }
         }
     }).addTo(map);
@@ -301,13 +331,13 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
 
     cell
         .append("image")
-        // .attr("xlink:href", function(d) {
-        //     return "icons/" + selectname[d.data.name] + ".png"
-        // })
+        .attr("xlink:href", function(d) {
+            return iconsFields[d.data.name];
+        })
         .attr("x", 12)
         .attr("y", 8)
-        .attr("width", 42)
-        .attr("height", 42);
+        .attr("width", 100)
+        .attr("height", 100);
 
     var mapCell = cell.append("text")
         .attr("clip-path", function(d) {
@@ -324,7 +354,7 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         // .style("fontSize", function(d, i){ return d.value })
         .attr("x", 12)
         .attr("y", function(d, i) {
-            return 42 + 42 + i * 36;
+            return 100 + 100 + i * 36;
         })
         .style("fill-opacity", 0)
         .text(function(d) {
@@ -339,7 +369,7 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .attr("class", "treemapValue")
         .attr("x", 12)
         .attr("dy", function(d) {
-            return d.data.name.split(/(?=[A-Z][^A-Z])/g).length * 36 + 2 * 36 + 62 / 2
+            return d.data.name.split(/(?=[A-Z][^A-Z])/g).length * 36 + 100 + 62 / 2
         })
         .style("fill-opacity", 0)
         .text(function(d) {
@@ -411,6 +441,11 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     svg.attr("width", w);
     svg.attr("height", h);
 
+    const LEFT_COL = 200;
+    const RIGHT_COL = 200;
+
+    var innerW = w - LEFT_COL - RIGHT_COL;
+
     var data = message;
 
     svg = svg
@@ -434,6 +469,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     	bars
     	.append("rect")
     	.attr("height", barHeight)
+    	.attr("x", 0)
     	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
     	.style("fill", "#565554")
     	.attr("width", w);
@@ -442,6 +478,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     	.append("rect")
     	.attr("width", 0)
     	.attr("height", barHeight)
+    	.attr("x", 0)
     	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
     	.style("fill", "#F5F749")
     	.attr("hello", function(d){ return JSON.stringify(d) })
@@ -452,7 +489,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     	.append("text")
     	.attr("class", "startText")
     	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
-    	.attr("x", 30)
+    	.attr("x", 30 + LEFT_COL)
     	.style("alignment-baseline", "middle")
     	.style("font-size", "72px")
     	.style("font-weight", "bold")
@@ -463,7 +500,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     	.append("text")
     	.attr("class", "endText")
     	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
-    	.attr("x", w - 30)
+    	.attr("x", innerW - 30 + LEFT_COL)
     	.style("alignment-baseline", "middle")
     	.style("text-anchor", "end")
     	.style("font-size", "72px")
@@ -490,4 +527,24 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     			that.text(d3.format(".0%")(i(t)));
     		}
     	})
+
+    	bars
+        .append("image")
+        .attr("xlink:href", function(d) {
+        	return iconsHobbies[d.hobby][0];
+        })
+        .attr("x", 25)
+        .attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 - 75 })
+        .attr("width", 150)
+        .attr("height", 150);
+
+       	bars
+           .append("image")
+           .attr("xlink:href", function(d) {
+           	return iconsHobbies[d.hobby][1];
+           })
+           .attr("x", w - 150 - 25)
+           .attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 - 75 })
+           .attr("width", 150)
+           .attr("height", 150);
 })

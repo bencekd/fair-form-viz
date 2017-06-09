@@ -20,7 +20,7 @@ shinyUI(
 	  fluidRow(class = "fullRow",
 	    column(6,
 	    	wellPanel(
-	    		tags$div(id="shiny_map"), class="container-box")
+	    		tags$div(id="shiny_field"), class="container-box")
 	    	),
 	    column(6,
 	    	wellPanel(
@@ -30,7 +30,7 @@ shinyUI(
 	  fluidRow(class = "fullRow",
 	    column(6,
 	    	wellPanel(
-	    		tags$div(id="shiny_field"), class="container-box")
+	    		tags$div(id="shiny_map"), class="container-box")
 	    	),
 	    column(6,
 	    	wellPanel(
