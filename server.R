@@ -33,39 +33,50 @@ shinyServer(function(input, output, session) {
   })
   
   
-  ### GENDER PIE ###
-  observeEvent(row$count, {
+  ### OBSERVE EVENTS ###
+  observeEvent({row$count
+    input$divider}, {
     
-    agegender <- mutate(ss_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
+      loc_dat <- ss_dat
+      lastIndex <- nrow(loc_dat)
+      
+      if (input$divider == 1) {
+        loc_dat <- loc_dat[10:lastIndex,]
+      }
+      
+
+      lastReply <- loc_dat[lastIndex,2:10]
+      
+    agegender <- mutate(loc_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
       mutate(gender=replace(gender, gender=="Nő", "female")) %>%
       group_by(age, gender) %>%    
       summarise(n = n()) %>% 
       spread(gender, n)
     
-    citytype <- group_by(ss_dat, citytype) %>%
+    citytype <- group_by(loc_dat, citytype) %>%
       summarise(count = n())
     
-    county <- group_by(ss_dat, county) %>%
+    county <- group_by(loc_dat, county) %>%
       summarise(count = n()) %>%
       mutate(freq = count / sum(count))
     
-    field <- group_by(ss_dat, field) %>%
+    field <- group_by(loc_dat, field) %>%
       select(name = field) %>%
       summarise(count = n())
     
-    seriesmovie <- group_by(ss_dat, seriesmovie) %>%
+    seriesmovie <- group_by(loc_dat, seriesmovie) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
       select(hobby = seriesmovie, rate) %>%
       filter(hobby == 'Sorozatok')
     
-    starwarstrek <- group_by(ss_dat, starwarstrek) %>%
+    starwarstrek <- group_by(loc_dat, starwarstrek) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
       select(hobby = starwarstrek, rate) %>%
       filter(hobby == 'Star Wars')
     
-    lordofthrones <- group_by(ss_dat, lordofthrones) %>%
+    lordofthrones <- group_by(loc_dat, lordofthrones) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
       select(hobby = lordofthrones, rate) %>%
@@ -86,7 +97,7 @@ shinyServer(function(input, output, session) {
       nrow = 7, ncol = 7)
     colnames(freetime) <- schema
 
-    splitTime <- strsplit(ss_dat$freetime, ", ")
+    splitTime <- strsplit(loc_dat$freetime, ", ")
         
     for(i in seq_along(splitTime)) {
       fill <- which(schema %in% splitTime[[i]])
@@ -104,6 +115,7 @@ shinyServer(function(input, output, session) {
       }
     }
     
+    session$sendCustomMessage(type="json_lastreply",toJSON(lastReply))
     session$sendCustomMessage(type="json_agegender",toJSON(agegender))
     session$sendCustomMessage(type="json_citytype",toJSON(citytype))
     session$sendCustomMessage(type="json_county",toJSON(county))
