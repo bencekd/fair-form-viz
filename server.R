@@ -1,7 +1,7 @@
 shinyServer(function(input, output, session) {  
   ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
   ss_dat <- gs_read(ss)
-  names(ss_dat) <- c("timestamp", "gender", "citytype", "county", "age", "field", "seriesmovie", "starwarstrek", "lordofthrones", "freetime", "bored")  
+  names(ss_dat) <- c("timestamp", "gender", "citytype", "county", "age", "field", "hobbies01", "hobbies02", "hobbies03", "freetime", "bored")  
   ### init rowcounter for trigger plots ###
   row <- reactiveValues(count = 0)
   
@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
     
     ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
     ss_dat <<- gs_read(ss)
-    names(ss_dat) <<- c("timestamp", "gender", "citytype", "county", "age", "field", "seriesmovie", "starwarstrek", "lordofthrones", "freetime", "bored")
+    names(ss_dat) <<- c("timestamp", "gender", "citytype", "county", "age", "field", "hobbies01", "hobbies02", "hobbies03", "freetime", "bored")
 
       # select(timestamp = names(.)[1],
       #    gender = `Mi a nemed?`,
@@ -40,18 +40,26 @@ shinyServer(function(input, output, session) {
       loc_dat <- ss_dat
       lastIndex <- nrow(loc_dat)
       
-      if (input$divider == 1) {
-        loc_dat <- loc_dat[10:lastIndex,]
-      }
-      
+      # a switch a front-enden "Mindenki"
+      # szóval ha FALSE, akkor adja vissza az eredeti állományt (első n sor) + az utolsó sort
+      # viszont ha TRUE, akkor kérünk mindent 
 
+      if (input$divider == FALSE) {
+        loc_dat <- loc_dat[c(1:20,lastIndex),]
+      }
+      lastIndex <- nrow(loc_dat)
+      
       lastReply <- loc_dat[lastIndex,2:10]
+      lastReply$hobbies <- loc_dat[lastIndex,7:9]
       
     agegender <- mutate(loc_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
       mutate(gender=replace(gender, gender=="Nő", "female")) %>%
       group_by(age, gender) %>%    
       summarise(n = n()) %>% 
       spread(gender, n)
+
+      age <- group_by(loc_dat, age) %>%
+        summarise(count = n())
     
     citytype <- group_by(loc_dat, citytype) %>%
       summarise(count = n())
@@ -64,25 +72,25 @@ shinyServer(function(input, output, session) {
       select(name = field) %>%
       summarise(count = n())
     
-    seriesmovie <- group_by(loc_dat, seriesmovie) %>%
+    hobbies01 <- group_by(loc_dat, hobbies01) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
-      select(hobby = seriesmovie, rate) %>%
+      select(hobby = hobbies01, rate) %>%
       filter(hobby == 'Sorozatok')
     
-    starwarstrek <- group_by(loc_dat, starwarstrek) %>%
+    hobbies02 <- group_by(loc_dat, hobbies02) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
-      select(hobby = starwarstrek, rate) %>%
+      select(hobby = hobbies02, rate) %>%
       filter(hobby == 'Star Wars')
     
-    lordofthrones <- group_by(loc_dat, lordofthrones) %>%
+    hobbies03 <- group_by(loc_dat, hobbies03) %>%
       summarise(count = n()) %>%
       mutate(rate = count / sum(count)) %>%
-      select(hobby = lordofthrones, rate) %>%
-      filter(hobby == 'Gyűrűk ura')
+      select(hobby = hobbies03, rate) %>%
+      filter(hobby == "Gyűrűk ura")
     
-    hobby <- rbind(seriesmovie,starwarstrek,lordofthrones)
+    hobby <- rbind(hobbies01,hobbies02,hobbies03)
     
     schema <- c("Utazom","Sportolok","Olvasok","Képzem magam","Játszom","Családdal vagyok","Mi az a szabadidő?!")
     
@@ -114,6 +122,16 @@ shinyServer(function(input, output, session) {
         }
       }
     }
+
+    # calculate score
+
+    # county
+    comp01 <- (county$count[county$county == lastReply$county] / max(county$count)) * 25;
+    comp02 <- (field$count[field$name == lastReply$field] / max(field$count)) * 25;
+    comp03 <- (age$count[age$age == lastReply$age] / max(age$count)) * 25;
+    comp04 <- sum((25 / dim(hobby)[1]) * unlist(sapply(1:dim(hobby)[1], function(i) if(lastReply$hobbies[i] == hobby[i, 1]){ hobby[i,2] } else { 1-hobby[i,2]})))
+
+    hiflyscore = comp01 + comp02 + comp03 + comp04
     
     session$sendCustomMessage(type="json_lastreply",toJSON(lastReply))
     session$sendCustomMessage(type="json_agegender",toJSON(agegender))
@@ -122,5 +140,7 @@ shinyServer(function(input, output, session) {
     session$sendCustomMessage(type="json_field",toJSON(field))
     session$sendCustomMessage(type="json_hobby",toJSON(hobby))
     session$sendCustomMessage(type="json_freetime",toJSON(toJSON(data.frame(freetime))))
+
+    session$sendCustomMessage(type="updatedShiny",hiflyscore)
   })
 })

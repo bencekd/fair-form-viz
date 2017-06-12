@@ -55,6 +55,10 @@ html, body{
 	height: 100%;
 }
 
+#calculated_score{
+	height: 100%;
+}
+
 .treemapText, .treemapValue{
 	fill: white;
 	font-size: 34px;

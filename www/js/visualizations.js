@@ -3,29 +3,41 @@
 /////////////////////////////////
 
 const iconsAgeGroup = {
-	"18-24": "img/icons/002-library.png",
-	"25-30": "img/icons/002-library.png",
-	"31-36": "img/icons/002-library.png",
-	"37-42": "img/icons/001-medicine-briefcase.png",
-	"43-48": "img/icons/002-library.png",
-	"49-54": "img/icons/002-library.png",
-	"55-60": "img/icons/002-library.png",
-	"60-": "img/icons/002-library.png"
+    "18-24": "img/icons/002-library.png",
+    "25-30": "img/icons/002-library.png",
+    "31-36": "img/icons/002-library.png",
+    "37-42": "img/icons/001-medicine-briefcase.png",
+    "43-48": "img/icons/002-library.png",
+    "49-54": "img/icons/002-library.png",
+    "55-60": "img/icons/002-library.png",
+    "60-": "img/icons/002-library.png"
 };
 
 const iconsFields = {
-	"Műszaki": "img/icons/001-medicine-briefcase.png",
-	"Gazdasági": "img/icons/002-library.png",
-	"Jogi": "img/icons/002-library.png",
-	"Társadalomtudományi": "img/icons/002-library.png",
-	"Állami": "img/icons/002-library.png" 
+    "Műszaki": "img/icons/001-medicine-briefcase.png",
+    "Gazdasági": "img/icons/002-library.png",
+    "Jogi": "img/icons/002-library.png",
+    "Társadalomtudományi": "img/icons/002-library.png",
+    "Állami": "img/icons/002-library.png"
 }
 
 const iconsHobbies = {
-	"Sorozatok": ["img/icons/001-medicine-briefcase.png", "img/icons/002-library.png"],
-	"Star Wars": ["img/icons/002-library.png", "img/icons/002-library.png"],
-	"Gyűrűk ura": ["img/icons/002-library.png", "img/icons/002-library.png"]
+    "Sorozatok": ["img/icons/001-medicine-briefcase.png", "img/icons/002-library.png"],
+    "Star Wars": ["img/icons/002-library.png", "img/icons/002-library.png"],
+    "Gyűrűk ura": ["img/icons/002-library.png", "img/icons/002-library.png"]
 }
+
+/////////////////////////////////
+////  Last reply
+/////////////////////////////////
+
+var _globalLastReply;
+
+Shiny.addCustomMessageHandler("json_lastreply", function(lastrow) {
+
+    _globalLastReply = lastrow[0];
+
+})
 
 /////////////////////////////////
 ////  Korfa / Population pyramid
@@ -135,7 +147,10 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
             return yScale(d.age) - ((yScale.step() - 20) / 2);
         })
         .attr('height', yScale.step() - 20)
-        .transition().duration(1000).delay(500)
+        .transition().duration(1000).delay(1000)
+        .style('fill', function(d) {
+            return (d.age === _globalLastReply.age && _globalLastReply.gender === 'Férfi') ? 'white' : false
+        })
         .attr('width', function(d) {
             return xScale(percentage(d.male));
         });
@@ -149,7 +164,10 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
             return yScale(d.age) - ((yScale.step() - 20) / 2);
         })
         .attr('height', yScale.step() - 20)
-        .transition().duration(1000).delay(500)
+        .transition().duration(1000).delay(1000)
+        .style('fill', function(d) {
+            return (d.age === _globalLastReply.age && _globalLastReply.gender === 'Nő') ? 'white' : false
+        })
         .attr('width', function(d) {
             return xScale(percentage(d.female));
         });
@@ -157,14 +175,13 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
     // APPEND ICONS
 
     icons = svg.append("g")
-    	.attr("class", "icons");
+        .attr("class", "icons");
 
     icons.selectAll("icon")
-    	.data(data).enter()
-    	.append("image")
-    	.attr("class", "icon")
+        .data(data).enter()
+        .append("image")
+        .attr("class", "icon")
         .attr("xlink:href", function(d) {
-        	console.log(d);
             return iconsAgeGroup[d.age];
         })
         .attr("x", 30)
@@ -233,11 +250,21 @@ Shiny.addCustomMessageHandler("json_county", function(message) {
         .interpolate(d3.interpolateHcl)
         .range([d3.rgb(colorScale[0]), d3.rgb(colorScale[1])]);
 
+    highlight = function(feature) {
+        return (_globalLastReply.county === feature.properties.name) ? {
+            color: 'white',
+            width: 13
+        } : {
+            color: 'black',
+            width: 1.5
+        };
+    };
+
     L.geoJson(hungaryGEO, {
         style: function(feature) { // Style option
             return {
-                'weight': 1.5,
-                'color': 'black',
+                'weight': highlight(feature).width,
+                'color': highlight(feature).color,
                 'fillColor': color((feature.properties.freq) ? feature.properties.freq : '0'),
                 'fillOpacity': 0.9
             }
@@ -253,11 +280,17 @@ const treemapShinyID = "shiny_field"
 
 Shiny.addCustomMessageHandler("json_field", function(message) {
 
-	var data = {
-		"name": "main",
-		"id": "main",
-		"children": message.map(function(d){ return {id: "main." + d.name, name: d.name, size: d.count} })
-	};
+    var data = {
+        "name": "main",
+        "id": "main",
+        "children": message.map(function(d) {
+            return {
+                id: "main." + d.name,
+                name: d.name,
+                size: d.count
+            }
+        })
+    };
 
     var svg;
 
@@ -295,6 +328,16 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
     root.parent = "main";
     treemap(root);
 
+    var highlight = function(dpoint) {
+        return (dpoint.data.name === _globalLastReply.field) ? {
+            color: 'white',
+            width: 12
+        } : {
+            color: false,
+            width: false
+        }
+    }
+
     var cell = svg.selectAll("g")
         .data(root.leaves())
         .enter().append("g")
@@ -312,6 +355,12 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         })
         .attr("height", 40)
         .attr("width", 40)
+        .style("stroke", function(d) {
+            return highlight(d).color;
+        })
+        .style("stroke-width", function(d) {
+            return highlight(d).width
+        })
         .transition().duration(1000).delay(500)
         .attr("height", function(d) {
             return d.y1 - d.y0;
@@ -426,6 +475,8 @@ const kpiShinyID = "shiny_hobbies";
 
 Shiny.addCustomMessageHandler("json_hobby", function(message) {
 
+    console.log(message);
+
     var svg;
 
     if ($("#" + kpiShinyID + " > svg").length == 0) {
@@ -449,7 +500,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     var data = message;
 
     svg = svg
-    	.append("g");
+        .append("g");
 
     var scaleToWidth = d3.scaleLinear()
         .domain([0, 1])
@@ -461,90 +512,189 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     var barHeight = ((h - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
 
     // value bar + full bar
-    var bars = svg	
-    	.selectAll(".bar")
-    	.data(data)
-    	.enter();
+    var bars = svg
+        .selectAll(".bar")
+        .data(data)
+        .enter();
 
-    	bars
-    	.append("rect")
-    	.attr("height", barHeight)
-    	.attr("x", 0)
-    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
-    	.style("fill", "#565554")
-    	.attr("width", w);
+    bars
+        .append("rect")
+        .attr("height", barHeight)
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS)
+        })
+        .attr("width", w)
+        .style("fill", "#565554")
+        .transition().duration(1000).delay(3000)
+        .style("fill", function(d, i) {
+            return (d.hobby === _globalLastReply.hobbies[Object.keys(_globalLastReply.hobbies)[i]]) ? 'white' : "#565554"
+        });
 
-    	bars
-    	.append("rect")
-    	.attr("width", 0)
-    	.attr("height", barHeight)
-    	.attr("x", 0)
-    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) })
-    	.style("fill", "#F5F749")
-    	.attr("hello", function(d){ return JSON.stringify(d) })
-    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
-		.attr("width", function(d){ return scaleToWidth(d.rate) });
+    bars
+        .append("rect")
+        .attr("width", 0)
+        .attr("height", barHeight)
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS)
+        })
+        .attr("hello", function(d) {
+            return JSON.stringify(d)
+        })
+        .style("fill", "#F5F749")
+        .transition().ease(d3.easeQuadOut).duration(function(d) {
+            return d.rate * MAX_DURATION
+        }).delay(500)
+        .attr("width", function(d) {
+            return scaleToWidth(d.rate)
+        })
+        .transition().duration(1000)
+        .style("fill", function(d, i) {
+            return (d.hobby !== _globalLastReply.hobbies[Object.keys(_globalLastReply.hobbies)[i]]) ? 'white' : "#F5F749"
+        });
 
-    	bars
-    	.append("text")
-    	.attr("class", "startText")
-    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
-    	.attr("x", 30 + LEFT_COL)
-    	.style("alignment-baseline", "middle")
-    	.style("font-size", "72px")
-    	.style("font-weight", "bold")
-    	.style("fill", "black")
-    	.text("0%");
+    bars
+        .append("text")
+        .attr("class", "startText")
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2
+        })
+        .attr("x", 30 + LEFT_COL)
+        .style("alignment-baseline", "middle")
+        .style("font-size", "72px")
+        .style("font-weight", "bold")
+        .style("fill", "black")
+        .text("0%");
 
-    	bars
-    	.append("text")
-    	.attr("class", "endText")
-    	.attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 })
-    	.attr("x", innerW - 30 + LEFT_COL)
-    	.style("alignment-baseline", "middle")
-    	.style("text-anchor", "end")
-    	.style("font-size", "72px")
-    	.style("font-weight", "bold")
-    	.style("fill", "white")
-    	.text("100%");
+    bars
+        .append("text")
+        .attr("class", "endText")
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2
+        })
+        .attr("x", innerW - 30 + LEFT_COL)
+        .style("alignment-baseline", "middle")
+        .style("text-anchor", "end")
+        .style("font-size", "72px")
+        .style("font-weight", "bold")
+        .style("fill", "white")
+        .text("100%");
 
-    	bars.selectAll(".endText")
-    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
-    	.tween("text", function(d){
-    		var i = d3.interpolate(1, 1-d.rate);
-    		var that = d3.select(this);
-    		return function(t){
-    			that.text(d3.format(".0%")(i(t)));
-    		}
-    	})
+    bars.selectAll(".endText")
+        .transition().ease(d3.easeQuadOut).duration(function(d) {
+            return d.rate * MAX_DURATION
+        }).delay(500)
+        .tween("text", function(d) {
+            var i = d3.interpolate(1, 1 - d.rate);
+            var that = d3.select(this);
+            return function(t) {
+                that.text(d3.format(".0%")(i(t)));
+            }
+        })
 
-    	bars.selectAll(".startText")
-    	.transition().ease(d3.easeQuadOut).duration(function(d){ return d.rate * MAX_DURATION }).delay(500)
-    	.tween("text", function(d){
-    		var i = d3.interpolate(0, d.rate);
-    		var that = d3.select(this);
-    		return function(t){
-    			that.text(d3.format(".0%")(i(t)));
-    		}
-    	})
+    bars.selectAll(".startText")
+        .transition().ease(d3.easeQuadOut).duration(function(d) {
+            return d.rate * MAX_DURATION
+        }).delay(500)
+        .tween("text", function(d) {
+            var i = d3.interpolate(0, d.rate);
+            var that = d3.select(this);
+            return function(t) {
+                that.text(d3.format(".0%")(i(t)));
+            }
+        })
 
-    	bars
+    bars
         .append("image")
         .attr("xlink:href", function(d) {
-        	return iconsHobbies[d.hobby][0];
+            return iconsHobbies[d.hobby][0];
         })
         .attr("x", 25)
-        .attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 - 75 })
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 75
+        })
         .attr("width", 150)
         .attr("height", 150);
 
-       	bars
-           .append("image")
-           .attr("xlink:href", function(d) {
-           	return iconsHobbies[d.hobby][1];
-           })
-           .attr("x", w - 150 - 25)
-           .attr("y", function(d, i){ return i * (barHeight + PADDING_BTWN_BARS) + barHeight/2 - 75 })
-           .attr("width", 150)
-           .attr("height", 150);
+    bars
+        .append("image")
+        .attr("xlink:href", function(d) {
+            return iconsHobbies[d.hobby][1];
+        })
+        .attr("x", w - 150 - 25)
+        .attr("y", function(d, i) {
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 75
+        })
+        .attr("width", 150)
+        .attr("height", 150);
 })
+
+/////////////////////////////////
+////  HiflyScore
+/////////////////////////////////
+
+const HiflyScore = "calculated_score";
+
+Shiny.addCustomMessageHandler("updatedShiny", function(message) {
+
+	var calcScore = message;
+    var svg;
+
+    if ($("#" + HiflyScore + " > svg").length == 0) {
+        svg = d3.select("#" + HiflyScore).append("svg");
+    } else {
+        d3.select("#" + HiflyScore + " > svg").remove();
+        svg = d3.select("#" + HiflyScore).append("svg");
+    }
+
+    var w = $("#" + HiflyScore)[0].clientWidth;
+    var h = $("#" + HiflyScore)[0].clientHeight;
+
+    svg.attr("width", w);
+    svg.attr("height", h);
+
+    svg = svg
+        .append("g")
+        .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+
+    var twoPi = 2 * Math.PI,
+        progress = 0,
+        total = calcScore,
+        formatPercent = d3.format(".0%");
+
+    var arc = d3.arc()
+        .startAngle(0)
+        .innerRadius(180)
+        .outerRadius(240);
+
+    var meter = svg.append("g")
+        .attr("class", "progress-meter");
+
+    meter.append("path")
+        .attr("class", "background")
+        .style("fill", "#565554")
+        .attr("d", arc.endAngle(twoPi));
+
+    var foreground = meter.append("path")
+        .attr("class", "foreground");
+
+    var text = meter.append("text")
+        .attr("text-anchor", "middle")
+        .style("font-size", "72px")
+        .style("fill", "white")
+        .attr("dy", ".35em");
+
+    var interp = d3.interpolate(0, total/100);
+    d3.transition().duration(5000).delay(4000).tween("progressName", function() {
+        return function(t) {
+        	console.log(t);
+            progress = interp(t);
+            foreground.attr("d", arc.endAngle(twoPi * progress))
+                .style("fill", "#0083A8");
+            text.text(formatPercent(progress));
+        };
+    });
+
+})
+
