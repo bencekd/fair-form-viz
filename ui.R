@@ -1,3 +1,5 @@
+source("./Rsource/SwitchButton.R")
+
 shinyUI(
 	fluidPage( id="main-container",
 	  tags$head(
@@ -5,14 +7,12 @@ shinyUI(
 	      tags$link(rel = "stylesheet", type = "text/css", href = "styles/bootstrap.min.css"),
 	      tags$link(rel = "stylesheet", type = "text/css", href = "http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"),
 	      tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto+Condensed"),
+	      tags$link(rel = "stylesheet", type = "text/css", href = "styles/button.css"),
 
 	      tags$script(src = "http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"),
 	      tags$script(src = "http://maps.stamen.com/js/tile.stamen.js?v1.3.0"),
 	      tags$script(src="https://d3js.org/d3.v4.min.js"),
-	      tags$script(src= "js/hungaryGEO.js"),
-
-	      tags$link(rel = "stylesheet", type = "text/css", href= "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.css"),
-	      tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.js")
+	      tags$script(src= "js/hungaryGEO.js")
 
 	      # tags$script(src= "d3_demochart.js")
 	    ),
@@ -22,7 +22,11 @@ shinyUI(
 	  		tags$h1("Google Forms + R Shiny + D3.js dash", class="headerText")
 	  		),
 	  	column(3,
-	  	       checkboxInput("divider", "Mindenki", FALSE)		
+	  		tags$div(class="padded pull-right",
+		  	    switchButton(inputId = "divider",
+	                label = "Mindenki", 
+	                value = FALSE, col = "GB", type = "OO")
+	  		)
 	  	)
 	  ),
 	  fluidRow(class = "fullRow",
@@ -54,6 +58,8 @@ shinyUI(
 	    		tags$div(id="shiny_hobbies"), class="container-box")
 	    	)
 	  ),
-	  tags$script(src= "js/visualizations.js")
+	  tags$script(src= "js/visualizations.js"),
+	  tags$link(rel = "stylesheet", type = "text/css", href= "https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css"),
+	  tags$script(src = "https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js")
 	)
 )

@@ -104,3 +104,11 @@ html, body{
 	padding-left: 60px;
 	text-anchor: middle;
 }
+
+.padded{
+	padding: 80px 0px 0px 80px;
+	transform: scale(2);
+}
+.padded > label, .padded > div{
+	float: right;
+}

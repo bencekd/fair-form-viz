@@ -52,43 +52,43 @@ shinyServer(function(input, output, session) {
       lastReply <- loc_dat[lastIndex,2:10]
       lastReply$hobbies <- loc_dat[lastIndex,7:9]
       
-    agegender <- mutate(loc_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
-      mutate(gender=replace(gender, gender=="Nő", "female")) %>%
-      group_by(age, gender) %>%    
-      summarise(n = n()) %>% 
-      spread(gender, n)
+      agegender <- mutate(loc_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
+        mutate(gender=replace(gender, gender=="Nő", "female")) %>%
+        group_by(age, gender) %>%    
+        summarise(n = n()) %>% 
+        spread(gender, n)
 
-      age <- group_by(loc_dat, age) %>%
+        age <- group_by(loc_dat, age) %>%
+          summarise(count = n())
+      
+      citytype <- group_by(loc_dat, citytype) %>%
         summarise(count = n())
-    
-    citytype <- group_by(loc_dat, citytype) %>%
-      summarise(count = n())
-    
-    county <- group_by(loc_dat, county) %>%
-      summarise(count = n()) %>%
-      mutate(freq = count / sum(count))
-    
-    field <- group_by(loc_dat, field) %>%
-      select(name = field) %>%
-      summarise(count = n())
-    
-    hobbies01 <- group_by(loc_dat, hobbies01) %>%
-      summarise(count = n()) %>%
-      mutate(rate = count / sum(count)) %>%
-      select(hobby = hobbies01, rate) %>%
-      filter(hobby == 'Sorozatok')
-    
-    hobbies02 <- group_by(loc_dat, hobbies02) %>%
-      summarise(count = n()) %>%
-      mutate(rate = count / sum(count)) %>%
-      select(hobby = hobbies02, rate) %>%
-      filter(hobby == 'Star Wars')
-    
-    hobbies03 <- group_by(loc_dat, hobbies03) %>%
-      summarise(count = n()) %>%
-      mutate(rate = count / sum(count)) %>%
-      select(hobby = hobbies03, rate) %>%
-      filter(hobby == "Gyűrűk ura")
+      
+      county <- group_by(loc_dat, county) %>%
+        summarise(count = n()) %>%
+        mutate(freq = count / sum(count))
+      
+      field <- group_by(loc_dat, field) %>%
+        select(name = field) %>%
+        summarise(count = n())
+      
+      hobbies01 <- group_by(loc_dat, hobbies01) %>%
+        summarise(count = n()) %>%
+        mutate(rate = count / sum(count)) %>%
+        select(hobby = hobbies01, rate) %>%
+        filter(hobby == 'Sorozatok')
+      
+      hobbies02 <- group_by(loc_dat, hobbies02) %>%
+        summarise(count = n()) %>%
+        mutate(rate = count / sum(count)) %>%
+        select(hobby = hobbies02, rate) %>%
+        filter(hobby == 'Star Wars')
+      
+      hobbies03 <- group_by(loc_dat, hobbies03) %>%
+        summarise(count = n()) %>%
+        mutate(rate = count / sum(count)) %>%
+        select(hobby = hobbies03, rate) %>%
+        filter(hobby == "Gyűrűk ura")
     
     hobby <- rbind(hobbies01,hobbies02,hobbies03)
     

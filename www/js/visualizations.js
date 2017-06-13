@@ -665,8 +665,8 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
 
     var arc = d3.arc()
         .startAngle(0)
-        .innerRadius(180)
-        .outerRadius(240);
+        .innerRadius(200)
+        .outerRadius(360);
 
     var meter = svg.append("g")
         .attr("class", "progress-meter");
@@ -688,7 +688,6 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
     var interp = d3.interpolate(0, total/100);
     d3.transition().duration(5000).delay(4000).tween("progressName", function() {
         return function(t) {
-        	console.log(t);
             progress = interp(t);
             foreground.attr("d", arc.endAngle(twoPi * progress))
                 .style("fill", "#0083A8");
