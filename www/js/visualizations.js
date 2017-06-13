@@ -473,9 +473,7 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
 
 const kpiShinyID = "shiny_hobbies";
 
-Shiny.addCustomMessageHandler("json_hobby", function(message) {
-
-    console.log(message);
+Shiny.addCustomMessageHandler("json_vs", function(message) {
 
     var svg;
 
@@ -512,6 +510,8 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     var barHeight = ((h - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
 
     // value bar + full bar
+    console.log(data);
+
     var bars = svg
         .selectAll(".bar")
         .data(data)
@@ -528,7 +528,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
         .style("fill", "#565554")
         .transition().duration(1000).delay(3000)
         .style("fill", function(d, i) {
-            return (d.hobby === _globalLastReply.hobbies[Object.keys(_globalLastReply.hobbies)[i]]) ? 'white' : "#565554"
+            return (d.vs === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#565554"
         });
 
     bars
@@ -551,7 +551,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
         })
         .transition().duration(1000)
         .style("fill", function(d, i) {
-            return (d.hobby !== _globalLastReply.hobbies[Object.keys(_globalLastReply.hobbies)[i]]) ? 'white' : "#F5F749"
+            return (d.vs !== _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#F5F749"
         });
 
     bars
@@ -608,7 +608,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     bars
         .append("image")
         .attr("xlink:href", function(d) {
-            return iconsHobbies[d.hobby][0];
+            // return iconsHobbies[d.vs][0];
         })
         .attr("x", 25)
         .attr("y", function(d, i) {
@@ -620,7 +620,7 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
     bars
         .append("image")
         .attr("xlink:href", function(d) {
-            return iconsHobbies[d.hobby][1];
+            // return iconsHobbies[d.vs][1];
         })
         .attr("x", w - 150 - 25)
         .attr("y", function(d, i) {
@@ -637,6 +637,8 @@ Shiny.addCustomMessageHandler("json_hobby", function(message) {
 const HiflyScore = "calculated_score";
 
 Shiny.addCustomMessageHandler("updatedShiny", function(message) {
+
+	console.log(message);
 
 	var calcScore = message;
     var svg;

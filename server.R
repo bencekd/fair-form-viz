@@ -1,7 +1,7 @@
 shinyServer(function(input, output, session) {  
   ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
   ss_dat <- gs_read(ss)
-  names(ss_dat) <- c("timestamp", "gender", "citytype", "county", "age", "field", "hobbies01", "hobbies02", "hobbies03", "freetime", "bored")  
+  names(ss_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6")  
   ### init rowcounter for trigger plots ###
   row <- reactiveValues(count = 0)
   
@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
     
     ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
     ss_dat <<- gs_read(ss)
-    names(ss_dat) <<- c("timestamp", "gender", "citytype", "county", "age", "field", "hobbies01", "hobbies02", "hobbies03", "freetime", "bored")
+    names(ss_dat) <<- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6")  
 
       # select(timestamp = names(.)[1],
       #    gender = `Mi a nemed?`,
@@ -38,6 +38,7 @@ shinyServer(function(input, output, session) {
     input$divider}, {
     
       loc_dat <- ss_dat
+      names(loc_dat) <<- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6") 
       lastIndex <- nrow(loc_dat)
       
       # a switch a front-enden "Mindenki"
@@ -49,8 +50,8 @@ shinyServer(function(input, output, session) {
       }
       lastIndex <- nrow(loc_dat)
       
-      lastReply <- loc_dat[lastIndex,2:10]
-      lastReply$hobbies <- loc_dat[lastIndex,7:9]
+      lastReply <- loc_dat[lastIndex,]
+      lastReply$vs <- loc_dat[lastIndex,6:11]
       
       agegender <- mutate(loc_dat, gender=replace(gender, gender=="Férfi", "male")) %>%
         mutate(gender=replace(gender, gender=="Nő", "female")) %>%
@@ -58,10 +59,7 @@ shinyServer(function(input, output, session) {
         summarise(n = n()) %>% 
         spread(gender, n)
 
-        age <- group_by(loc_dat, age) %>%
-          summarise(count = n())
-      
-      citytype <- group_by(loc_dat, citytype) %>%
+      age <- group_by(loc_dat, age) %>%
         summarise(count = n())
       
       county <- group_by(loc_dat, county) %>%
@@ -71,57 +69,8 @@ shinyServer(function(input, output, session) {
       field <- group_by(loc_dat, field) %>%
         select(name = field) %>%
         summarise(count = n())
-      
-      hobbies01 <- group_by(loc_dat, hobbies01) %>%
-        summarise(count = n()) %>%
-        mutate(rate = count / sum(count)) %>%
-        select(hobby = hobbies01, rate) %>%
-        filter(hobby == 'Sorozatok')
-      
-      hobbies02 <- group_by(loc_dat, hobbies02) %>%
-        summarise(count = n()) %>%
-        mutate(rate = count / sum(count)) %>%
-        select(hobby = hobbies02, rate) %>%
-        filter(hobby == 'Star Wars')
-      
-      hobbies03 <- group_by(loc_dat, hobbies03) %>%
-        summarise(count = n()) %>%
-        mutate(rate = count / sum(count)) %>%
-        select(hobby = hobbies03, rate) %>%
-        filter(hobby == "Gyűrűk ura")
-    
-    hobby <- rbind(hobbies01,hobbies02,hobbies03)
-    
-    schema <- c("Utazom","Sportolok","Olvasok","Képzem magam","Játszom","Családdal vagyok","Mi az a szabadidő?!")
-    
-    freetime <- matrix(
-      c(0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0), 
-      nrow = 7, ncol = 7)
-    colnames(freetime) <- schema
 
-    splitTime <- strsplit(loc_dat$freetime, ", ")
-        
-    for(i in seq_along(splitTime)) {
-      fill <- which(schema %in% splitTime[[i]])
-      
-      if (length(fill) == 1) {
-        freetime[fill,fill] <- freetime[fill,fill] + 1
-      } else {
-        for(value in seq_along(fill)) {
-          for(netvalue in seq_along(fill)) {
-            if (netvalue > value) {
-              freetime[fill[value],fill[netvalue]] <- freetime[fill[value],fill[netvalue]] + 1
-            }
-          }
-        }
-      }
-    }
+      vsAll <- genVS(loc_dat, 1:6)
 
     # calculate score
 
@@ -129,18 +78,40 @@ shinyServer(function(input, output, session) {
     comp01 <- (county$count[county$county == lastReply$county] / max(county$count)) * 25;
     comp02 <- (field$count[field$name == lastReply$field] / max(field$count)) * 25;
     comp03 <- (age$count[age$age == lastReply$age] / max(age$count)) * 25;
-    comp04 <- sum((25 / dim(hobby)[1]) * unlist(sapply(1:dim(hobby)[1], function(i) if(lastReply$hobbies[i] == hobby[i, 1]){ hobby[i,2] } else { 1-hobby[i,2]})))
+    print(vsAll)
+    comp04 <- sum((25 / dim(vsAll)[1]) * unlist(sapply(1:dim(vsAll)[1], function(i) if(lastReply$vs[i] == vsAll[i, 1]){ vsAll[i,3] } else { 1-vsAll[i,3]})))
 
+    print(sum((25 / dim(vsAll)[1])))
+
+    print("_________________________")
+    print(paste(comp01, comp02, comp03, comp04, sep="@"))
     hiflyscore = comp01 + comp02 + comp03 + comp04
     
     session$sendCustomMessage(type="json_lastreply",toJSON(lastReply))
     session$sendCustomMessage(type="json_agegender",toJSON(agegender))
-    session$sendCustomMessage(type="json_citytype",toJSON(citytype))
     session$sendCustomMessage(type="json_county",toJSON(county))
     session$sendCustomMessage(type="json_field",toJSON(field))
-    session$sendCustomMessage(type="json_hobby",toJSON(hobby))
-    session$sendCustomMessage(type="json_freetime",toJSON(toJSON(data.frame(freetime))))
+    session$sendCustomMessage(type="json_vs",toJSON(vsAll))
 
     session$sendCustomMessage(type="updatedShiny",hiflyscore)
   })
 })
+
+
+genVS <- function(data, sequence){
+  for(i in sequence){
+    counter <- i + 5
+    grpby <- as.symbol(names(data)[counter])
+    vs <- group_by_(data, .dots = grpby) %>%
+    summarise(count = n()) %>%
+    mutate(rate = count / sum(count)) %>%
+    select(name = 1, 2:3) %>%
+    filter(.[[1]] == .[[1,1]])
+    if(exists("vsAll")){
+      vsAll <- rbind(vsAll, vs)
+    } else {
+      vsAll <- vs
+    }
+  }
+  return(vsAll)
+}
