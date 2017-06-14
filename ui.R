@@ -16,47 +16,40 @@ shinyUI(
 
 	      # tags$script(src= "d3_demochart.js")
 	    ),
-	  fluidRow(
-	  	column(9, class= "pull-left headerLogoCont", 
-	  		tags$img(src= "img/logo-white.png", class="headerLogo"),
-	  		tags$h1("Google Forms + R Shiny + D3.js dash", class="headerText")
-	  		),
-	  	column(3,
-	  		tags$div(class="padded pull-right",
-		  	    switchButton(inputId = "divider",
-	                label = "Mindenki", 
-	                value = FALSE, col = "GB", type = "OO")
-	  		)
-	  	)
+	  tags$div(class="col-md-2 container-left",
+	  	tags$div(class="headerLogoCont",
+	  		tags$img(src= "img/logo-white.png", class="headerLogo")
+	  	),
+	  	tags$div(class="left-container-box", 
+	  		tags$div(id="calculated_score")
+	  	),
+	  	tags$div(class="dataSwitch",
+	  	    switchButton(inputId = "divider",
+                label = "Mindenki", 
+                value = FALSE, col = "GB", type = "OO")
+	  	 )
 	  ),
-	  fluidRow(class = "fullRow",
-	  	column(3,
-	  		tags$div("HiflyScore", class="boxTitle"),
-	  		wellPanel(
-	  			tags$div(id="calculated_score"), class="container-box")
-	  		),
-	    column(5,
-	    	tags$div("Területeink", class="boxTitle"),
-	    	wellPanel(
-	    		tags$div(id="shiny_field"), class="container-box")
-	    	),
-	    column(4,
-	    	tags$div("Korfánk", class="boxTitle"),
-	    	wellPanel(
-	    		tags$div(id="shiny_agegender"), class="container-box")
-	    	)
-	  ),
-	  fluidRow(class = "fullRow",
-	    column(6,
-	    	tags$div("Honnan jöttünk", class="boxTitle"),
-	    	wellPanel(
-	    		tags$div(id="shiny_map"), class="container-box")
-	    	),
-	    column(6,
-	    	tags$div("Nehéz döntések", class="boxTitle"),
-	    	wellPanel(
-	    		tags$div(id="shiny_hobbies"), class="container-box")
-	    	)
+	  tags$div(class="col-md-10 container-right",
+	  	  fluidRow(class = "fullRow",
+	  	    column(6,
+	  	    	wellPanel(
+	  	    		tags$div(id="shiny_field"), class="container-box")
+	  	    	),
+	  	    column(6,
+	  	    	wellPanel(
+	  	    		tags$div(id="shiny_agegender"), class="container-box")
+	  	    	)
+	  	  ),
+	  	  fluidRow(class = "fullRow",
+	  	    column(6,
+	  	    	wellPanel(
+	  	    		tags$div(id="shiny_map"), class="container-box")
+	  	    	),
+	  	    column(6,
+	  	    	wellPanel(
+	  	    		tags$div(id="shiny_hobbies"), class="container-box")
+	  	    	)
+	  	  )
 	  ),
 	  tags$script(src= "js/visualizations.js"),
 	  tags$link(rel = "stylesheet", type = "text/css", href= "https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css"),

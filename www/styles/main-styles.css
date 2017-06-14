@@ -1,5 +1,7 @@
 html, body{
-	background-color: #4d5359;
+	background: url("../img/background.png");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
 	height: 100%;
 	font-family: 'Roboto Condensed', sans-serif;
 }
@@ -10,6 +12,8 @@ html, body{
 
 #main-container .container-box.well{
 	box-shadow: 2px 2px 21px -5px rgba(0,0,0,0.61);
+	background-color: rgba(190,190,190,0.65);
+	border-radius: 25px;
 }
 
 .container-box .well, .container-box .well div{
@@ -32,10 +36,10 @@ html, body{
 }
 
 .bar.left {
-  fill: #0083A8;
+  fill: #383C3E;
 }
 .bar.right {
-  fill: #ED254E;
+  fill: #00B775;
 }
 
 #shiny_map { height: 100%; }
@@ -55,10 +59,6 @@ html, body{
 	height: 100%;
 }
 
-#calculated_score{
-	height: 100%;
-}
-
 .treemapText, .treemapValue{
 	fill: white;
 	font-size: 34px;
@@ -70,12 +70,12 @@ html, body{
 }
 
 .fullRow{
-	height: calc(50% - 100px);
+	height: 50%;
 	padding: 30px;
 }
 
 .fullRow > div{
-	height: calc(100% - 100px);
+	height: 100%;
 }
 
 .fullRow .boxTitle{
@@ -89,6 +89,9 @@ html, body{
 
 .headerLogoCont{
 	height: 200px;
+	width: 90%;
+	margin: auto;
+	margin-top: 50px;
 }
 
 .headerLogo{
@@ -111,4 +114,37 @@ html, body{
 }
 .padded > label, .padded > div{
 	float: right;
+}
+.container-right{
+	height: 100%;
+}
+.container-left{
+	background-color: #383C3E;
+	height: 100%;
+	box-shadow: 4px 2px 32px -5px rgba(0,0,0,0.45);
+}
+
+.dataSwitch{
+	position: absolute;
+	bottom: 75px;
+	left: 250px;
+	transform: scale(2.3);
+}
+
+#calculated_score{
+	height: 100%;
+}
+
+#calculated_score text{
+	font-size: 3em;
+}
+
+.left-container-box{
+	width: 100%;
+	height: 100%;
+}
+
+text{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-weight: bolder;
 }

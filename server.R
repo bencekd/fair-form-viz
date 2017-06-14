@@ -38,7 +38,7 @@ shinyServer(function(input, output, session) {
     input$divider}, {
     
       loc_dat <- ss_dat
-      names(loc_dat) <<- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6") 
+      names(loc_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6") 
       lastIndex <- nrow(loc_dat)
       
       # a switch a front-enden "Mindenki"
@@ -46,7 +46,7 @@ shinyServer(function(input, output, session) {
       # viszont ha TRUE, akkor kérünk mindent 
 
       if (input$divider == FALSE) {
-        loc_dat <- loc_dat[c(1:20,lastIndex),]
+        loc_dat <- loc_dat[c(1:10,lastIndex),]
       }
       lastIndex <- nrow(loc_dat)
       
@@ -78,15 +78,10 @@ shinyServer(function(input, output, session) {
     comp01 <- (county$count[county$county == lastReply$county] / max(county$count)) * 25;
     comp02 <- (field$count[field$name == lastReply$field] / max(field$count)) * 25;
     comp03 <- (age$count[age$age == lastReply$age] / max(age$count)) * 25;
-    print(vsAll)
     comp04 <- sum((25 / dim(vsAll)[1]) * unlist(sapply(1:dim(vsAll)[1], function(i) if(lastReply$vs[i] == vsAll[i, 1]){ vsAll[i,3] } else { 1-vsAll[i,3]})))
 
-    print(sum((25 / dim(vsAll)[1])))
+    hiflyscore = comp01 + comp02 + comp03 + comp04  
 
-    print("_________________________")
-    print(paste(comp01, comp02, comp03, comp04, sep="@"))
-    hiflyscore = comp01 + comp02 + comp03 + comp04
-    
     session$sendCustomMessage(type="json_lastreply",toJSON(lastReply))
     session$sendCustomMessage(type="json_agegender",toJSON(agegender))
     session$sendCustomMessage(type="json_county",toJSON(county))

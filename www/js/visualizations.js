@@ -14,17 +14,27 @@ const iconsAgeGroup = {
 };
 
 const iconsFields = {
-    "Műszaki": "img/icons/001-medicine-briefcase.png",
-    "Gazdasági": "img/icons/002-library.png",
-    "Jogi": "img/icons/002-library.png",
-    "Társadalomtudományi": "img/icons/002-library.png",
-    "Állami": "img/icons/002-library.png"
+    "Gazdaságinformatika": "img/icons/fields/002-chart-analysis.png",
+    "Műszaki informatika": "img/icons/fields/003-browser.png",
+    "Gazdaságtan, közgazdaságtan": "img/icons/fields/001-dollar-analysis-bars-chart.png",
+    "Egyéb terület": "img/icons/fields/004-college-graduation.png",
+    "Matematika": "img/icons/fields/005-function-mathematical-symbol.png",
+    "Mérnöki tudományok": "img/icons/fields/006-engineering.png"
 }
 
-const iconsHobbies = {
-    "Sorozatok": ["img/icons/001-medicine-briefcase.png", "img/icons/002-library.png"],
-    "Star Wars": ["img/icons/002-library.png", "img/icons/002-library.png"],
-    "Gyűrűk ura": ["img/icons/002-library.png", "img/icons/002-library.png"]
+const iconsVs = {
+    "Ing / kosztüm / blúz": ["img/icons/vs/003_im.png", "img/icons/vs/003_polo.png"],
+    "Gyűrűk Ura": ["img/icons/vs/005_lotr.png", "img/icons/vs/005_got.png"],
+    "Hamburger": ["img/icons/vs/002_burger.png", "img/icons/vs/002_pizza.png"],
+    "Star Wars": ["img/icons/vs/001_starwars.png", "img/icons/vs/001_startrek.png"],
+    "Python": ["img/icons/vs/006_python.png", "img/icons/vs/006_rlogo.png"],
+    "Linux": ["img/icons/vs/004_linux.png", "img/icons/vs/004_win.png"],
+    "Póló": ["img/icons/vs/003_polo.png", "img/icons/vs/003_im.png"],
+    "Trónok Harca": ["img/icons/vs/005_got.png", "img/icons/vs/005_lotr.png"],
+    "Pizza": ["img/icons/vs/002_pizza.png", "img/icons/vs/002_burger.png"],
+    "Star Trek": ["img/icons/vs/001_startrek.png", "img/icons/vs/001_starwars.png"],
+    "R": ["img/icons/vs/006_rlogo.png", "img/icons/vs/006_python.png"],
+    "Windows": ["img/icons/vs/004_win.png", "img/icons/vs/004_linux.png"]
 }
 
 /////////////////////////////////
@@ -56,11 +66,14 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         svg = d3.select("#" + ageShinyID).append("svg");
     }
 
-    var w = $("#" + ageShinyID)[0].clientWidth;
-    var h = $("#" + ageShinyID)[0].clientHeight;
+    var w = $("#" + ageShinyID)[0].clientWidth * 0.9;
+    var h = $("#" + ageShinyID)[0].clientHeight * 0.8;
 
     svg.attr("width", w);
     svg.attr("height", h);
+    svg.style("margin", "auto");
+    svg.style("display", "table-cell");
+    svg.style("margin-top", "85px");
 
     var data = message;
 
@@ -87,7 +100,7 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 
     graph = svg
         .append('g')
-        .attr('transform', translation(margin.left, margin.top));
+        .attr('transform', 'translation(' + margin.left + ',' + margin.top + ')');
 
     var maxValue = Math.max(
         d3.max(data, function(d) {
@@ -124,15 +137,15 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
         .tickPadding(xScaleRight(maxValue));
 
     var leftBarGroup = graph.append('g')
-        .attr('transform', translation(pointA, 0) + 'scale(-1,1)');
+        .attr('transform', translation(pointA + 200, 50) + 'scale(-1,1)');
 
     var rightBarGroup = graph.append('g')
-        .attr('transform', translation(pointB, 0));
+        .attr('transform', translation(pointB + 200, 50));
 
     // DRAW AXES
     graph.append('g')
         .attr('class', 'axis y left')
-        .attr('transform', translation(pointA + 40, 0))
+        .attr('transform', translation(pointA + 70, 50))
         .call(yAxisLeft)
         .selectAll('text')
         .style('text-anchor', 'middle');
@@ -174,31 +187,31 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 
     // APPEND ICONS
 
-    icons = svg.append("g")
-        .attr("class", "icons");
+    // icons = svg.append("g")
+    //     .attr("class", "icons");
 
-    icons.selectAll("icon")
-        .data(data).enter()
-        .append("image")
-        .attr("class", "icon")
-        .attr("xlink:href", function(d) {
-            return iconsAgeGroup[d.age];
-        })
-        .attr("x", 30)
-        .attr('y', function(d) {
-            return yScale(d.age) - ((yScale.step() - 20) / 2 - 45);
-        })
-        .attr("width", 100)
-        .attr("height", 100);
+    // icons.selectAll("icon")
+    //     .data(data).enter()
+    //     .append("image")
+    //     .attr("class", "icon")
+    //     .attr("xlink:href", function(d) {
+    //         return iconsAgeGroup[d.age];
+    //     })
+    //     .attr("x", 30)
+    //     .attr('y', function(d) {
+    //         return yScale(d.age) - ((yScale.step() - 20) / 2 - 45);
+    //     })
+    //     .attr("width", 100)
+    //     .attr("height", 100);
 
     // DRAW MIDDLE LINE
     graph.append('line')
-        .attr('x1', pointA + 40)
-        .attr('x2', pointA + 40)
+        .attr('x1', pointA + 200 + 40)
+        .attr('x2', pointA + 200 + 40)
         .attr('y1', -40)
-        .attr('y2', innerHeight + 40)
-        .attr("stroke-width", 2)
-        .attr("stroke", "white");
+        .attr('y2', innerHeight + 40 + 60)
+        .attr("stroke-width", 5)
+        .attr("stroke", "#383C3E");
 
     // so sick of string concatenation for translations
     function translation(x, y) {
@@ -212,7 +225,7 @@ Shiny.addCustomMessageHandler("json_agegender", function(message) {
 /////////////////////////////////
 
 const mapShinyID = "shiny_map";
-const colorScale = ["#F9DC5C", "#ED254E"];
+const colorScale = ["#00B775", "#383C3E"];
 
 var map = L.map(mapShinyID).setView([47.1567835, 19.6133071], 8);
 var w = $("#" + mapShinyID)[0].clientWidth;
@@ -307,7 +320,7 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
     svg.attr("width", width);
     svg.attr("height", height);
 
-    color = d3.scaleOrdinal(["#0083A8", "#565554", "#F5F749", "#ED254E"]),
+    color = d3.scaleOrdinal(["#00B775", "#383C3E", "#9B9B9B", "#E4E4E4"]),
         format = d3.format(",d");
 
     var treemap = d3.treemap()
@@ -331,7 +344,7 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
     var highlight = function(dpoint) {
         return (dpoint.data.name === _globalLastReply.field) ? {
             color: 'white',
-            width: 12
+            width: 40
         } : {
             color: false,
             width: false
@@ -383,28 +396,61 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .attr("xlink:href", function(d) {
             return iconsFields[d.data.name];
         })
-        .attr("x", 12)
-        .attr("y", 8)
-        .attr("width", 100)
-        .attr("height", 100);
+        .attr("x", function(d){ 
+        	var winner = d.x1 - d.x0;
+        	return winner * 0.05;
+        })
+        .attr("y", function(d){
+        	var hinner = d.y1 - d.y0;
+        	return hinner * 0.05;	
+        })
+        .attr("width", function(d){ 
+        	var hinner = d.y1 - d.y0;
+        	var winner = d.x1 - d.x0;
+        	var maxinner = d3.min([hinner, winner]);
+        	return maxinner * 0.5 
+        })
+        .attr("height", function(d){
+        	var hinner = d.y1 - d.y0;
+        	var winner = d.x1 - d.x0;
+        	var maxinner = d3.min([hinner, winner]);
+        	return maxinner * 0.5 
+     	})
+     	.style("opacity", 0)
+     	.transition().delay(1500).duration(1000)
+     	.style("opacity", 1);
 
-    var mapCell = cell.append("text")
+    var textHolder = cell.append("g")
+    	.attr("transform", function(d){
+    		var hinner = d.y1 - d.y0;
+    		var winner = d.x1 - d.x0;
+    		var maxinner = d3.min([hinner, winner]);
+    		return "translate(" + winner * 0.05 + "," + maxinner * 0.60 + ")";
+    	});
+
+    var mapCell = textHolder.append("text")
         .attr("clip-path", function(d) {
             return "url(#clip-" + d.data.id + ")";
         })
         .selectAll("tspan")
         .data(function(d) {
-            return d.data.name.split(/(?=[A-Z][^A-Z])/g);
+        	var winner = d.x1 - d.x0;
+        	if(winner < (d.data.name.length * 20)){
+            	return d.data.name.split(" ");
+        	} else {
+        		return [d.data.name];
+        	}
         })
         .enter()
         .append("tspan")
         .attr("class", "treemapText")
         .style("dominantBaseline", "hanging")
-        // .style("fontSize", function(d, i){ return d.value })
         .attr("x", 12)
-        .attr("y", function(d, i) {
-            return 100 + 100 + i * 36;
-        })
+        .attr("y", 95)
+        .attr("dy", function(d,i){ return i*36 })
+        // .attr("y", function(d, i) {
+        //     return 100 + 100 + i * 36;
+        // })
         .style("fill-opacity", 0)
         .text(function(d) {
             return d;
@@ -412,14 +458,15 @@ Shiny.addCustomMessageHandler("json_field", function(message) {
         .transition().delay(1500)
         .style("fill-opacity", 1);
 
-    cell
+    textHolder
         .append("text")
         .append("tspan")
         .attr("class", "treemapValue")
         .attr("x", 12)
-        .attr("dy", function(d) {
-            return d.data.name.split(/(?=[A-Z][^A-Z])/g).length * 36 + 100 + 62 / 2
-        })
+        .attr("dy", 60)
+        // .attr("dy", function(d) {
+        //     return d.data.name.split(/(?=[A-Z][^A-Z])/g).length * 36 + 100 + 62 / 2
+        // })
         .style("fill-opacity", 0)
         .text(function(d) {
             return d.value
@@ -475,6 +522,8 @@ const kpiShinyID = "shiny_hobbies";
 
 Shiny.addCustomMessageHandler("json_vs", function(message) {
 
+	console.log(message);
+
     var svg;
 
     if ($("#" + kpiShinyID + " > svg").length == 0) {
@@ -484,11 +533,14 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         svg = d3.select("#" + kpiShinyID).append("svg");
     }
 
-    var w = $("#" + kpiShinyID)[0].clientWidth;
-    var h = $("#" + kpiShinyID)[0].clientHeight;
+    var w = $("#" + kpiShinyID)[0].clientWidth * 0.95;
+    var h = $("#" + kpiShinyID)[0].clientHeight * 0.85;
 
     svg.attr("width", w);
     svg.attr("height", h);
+    svg.style("margin", "auto");
+    svg.style("display", "table-cell");
+    svg.style("margin-top", "75px");
 
     const LEFT_COL = 200;
     const RIGHT_COL = 200;
@@ -510,7 +562,6 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
     var barHeight = ((h - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
 
     // value bar + full bar
-    console.log(data);
 
     var bars = svg
         .selectAll(".bar")
@@ -525,10 +576,10 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
             return i * (barHeight + PADDING_BTWN_BARS)
         })
         .attr("width", w)
-        .style("fill", "#565554")
+        .style("fill", "#9B9B9B")
         .transition().duration(1000).delay(3000)
         .style("fill", function(d, i) {
-            return (d.vs === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#565554"
+            return (d.vs === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#9B9B9B"
         });
 
     bars
@@ -542,7 +593,7 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         .attr("hello", function(d) {
             return JSON.stringify(d)
         })
-        .style("fill", "#F5F749")
+        .style("fill", "#00B775")
         .transition().ease(d3.easeQuadOut).duration(function(d) {
             return d.rate * MAX_DURATION
         }).delay(500)
@@ -551,7 +602,7 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         })
         .transition().duration(1000)
         .style("fill", function(d, i) {
-            return (d.vs !== _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#F5F749"
+            return (d.vs !== _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#00B775"
         });
 
     bars
@@ -560,7 +611,7 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         .attr("y", function(d, i) {
             return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2
         })
-        .attr("x", 30 + LEFT_COL)
+        .attr("x", LEFT_COL)
         .style("alignment-baseline", "middle")
         .style("font-size", "72px")
         .style("font-weight", "bold")
@@ -608,26 +659,32 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
     bars
         .append("image")
         .attr("xlink:href", function(d) {
-            // return iconsHobbies[d.vs][0];
+            return iconsVs[d.name][0];
         })
         .attr("x", 25)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 75
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 50
         })
-        .attr("width", 150)
-        .attr("height", 150);
+        .attr("width", 100)
+        .attr("height", 100)
+        .style("opacity", 0)
+     	.transition().delay(1500).duration(1000)
+     	.style("opacity", 1);
 
     bars
         .append("image")
         .attr("xlink:href", function(d) {
-            // return iconsHobbies[d.vs][1];
+            return iconsVs[d.name][1];
         })
         .attr("x", w - 150 - 25)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 75
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 50
         })
-        .attr("width", 150)
-        .attr("height", 150);
+        .attr("width", 100)
+        .attr("height", 100)
+        .style("opacity", 0)
+     	.transition().delay(1500).duration(1000)
+     	.style("opacity", 1);
 })
 
 /////////////////////////////////
@@ -637,8 +694,6 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
 const HiflyScore = "calculated_score";
 
 Shiny.addCustomMessageHandler("updatedShiny", function(message) {
-
-	console.log(message);
 
 	var calcScore = message;
     var svg;
@@ -660,6 +715,12 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
         .append("g")
         .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
 
+    var filter = svg.append("defs")
+      .append("filter")
+        .attr("id", "blur")
+      .append("feGaussianBlur")
+        .attr("stdDeviation", 5);
+
     var twoPi = 2 * Math.PI,
         progress = 0,
         total = calcScore,
@@ -667,8 +728,8 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
 
     var arc = d3.arc()
         .startAngle(0)
-        .innerRadius(200)
-        .outerRadius(360);
+        .innerRadius(210)
+        .outerRadius(250);
 
     var meter = svg.append("g")
         .attr("class", "progress-meter");
@@ -679,11 +740,12 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
         .attr("d", arc.endAngle(twoPi));
 
     var foreground = meter.append("path")
-        .attr("class", "foreground");
+        .attr("class", "foreground")
+        .attr("filter", "url(#blur)");
 
     var text = meter.append("text")
         .attr("text-anchor", "middle")
-        .style("font-size", "72px")
+        .style("font-size", "9em")
         .style("fill", "white")
         .attr("dy", ".35em");
 
@@ -692,7 +754,7 @@ Shiny.addCustomMessageHandler("updatedShiny", function(message) {
         return function(t) {
             progress = interp(t);
             foreground.attr("d", arc.endAngle(twoPi * progress))
-                .style("fill", "#0083A8");
+                .style("fill", "#00B775");
             text.text(formatPercent(progress));
         };
     });
