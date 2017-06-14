@@ -19,7 +19,11 @@ const iconsFields = {
     "Gazdaságtan, közgazdaságtan": "img/icons/fields/001-dollar-analysis-bars-chart.png",
     "Egyéb terület": "img/icons/fields/004-college-graduation.png",
     "Matematika": "img/icons/fields/005-function-mathematical-symbol.png",
-    "Mérnöki tudományok": "img/icons/fields/006-engineering.png"
+    "Mérnöki tudományok": "img/icons/fields/006-engineering.png",
+    "Bölcsészettudományok": "img/icons/fields/010-humanities.png",
+    "Fizika": "img/icons/fields/009-physics.png",
+    "Más természettudományok": ,"img/icons/fields/008-science.png",
+    "Társadalomtudomány": "img/icons/fields/007-socialscience.png"
 }
 
 const iconsVs = {
@@ -578,10 +582,10 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
             return i * (barHeight + PADDING_BTWN_BARS) + padding.top
         })
         .attr("width", w)
-        .style("fill", "#9B9B9B")
+        .style("fill", "#00B775")
         .transition().duration(1000).delay(3000)
         .style("fill", function(d, i) {
-            return (d.name === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#9B9B9B";
+            return (d.name === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#00B775";
         });
 
     bars
