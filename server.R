@@ -1,7 +1,7 @@
 shinyServer(function(input, output, session) {  
   ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
   ss_dat <- gs_read(ss)
-  names(ss_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6")  
+  names(ss_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6", "email")  
   ### init rowcounter for trigger plots ###
   row <- reactiveValues(count = 0)
   
