@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
     
     ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
     ss_dat <<- gs_read(ss)
-    names(ss_dat) <<- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6")  
+    names(ss_dat) <<- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6", "email")  
 
       # select(timestamp = names(.)[1],
       #    gender = `Mi a nemed?`,
@@ -38,7 +38,7 @@ shinyServer(function(input, output, session) {
     input$divider}, {
     
       loc_dat <- ss_dat
-      names(loc_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6") 
+      names(loc_dat) <- c("timestamp", "gender", "county", "age", "field", "vs1", "vs2", "vs3", "vs4", "vs5", "vs6", "email") 
       lastIndex <- nrow(loc_dat)
       
       # a switch a front-enden "Mindenki"

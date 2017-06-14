@@ -522,8 +522,6 @@ const kpiShinyID = "shiny_hobbies";
 
 Shiny.addCustomMessageHandler("json_vs", function(message) {
 
-	console.log(message);
-
     var svg;
 
     if ($("#" + kpiShinyID + " > svg").length == 0) {
@@ -559,7 +557,11 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
     const PADDING_BTWN_BARS = 70;
     const MAX_DURATION = 4000;
 
-    var barHeight = ((h - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
+    var padding = {
+    	top: 20,
+    	bottom: 20
+    }
+    var barHeight = (((h - padding.top - padding.bottom) - ((data.length - 1) * PADDING_BTWN_BARS)) / data.length);
 
     // value bar + full bar
 
@@ -573,13 +575,13 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         .attr("height", barHeight)
         .attr("x", 0)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS)
+            return i * (barHeight + PADDING_BTWN_BARS) + padding.top
         })
         .attr("width", w)
         .style("fill", "#9B9B9B")
         .transition().duration(1000).delay(3000)
         .style("fill", function(d, i) {
-            return (d.vs === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#9B9B9B"
+            return (d.name === _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#9B9B9B";
         });
 
     bars
@@ -588,7 +590,7 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         .attr("height", barHeight)
         .attr("x", 0)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS)
+            return i * (barHeight + PADDING_BTWN_BARS) + padding.top
         })
         .attr("hello", function(d) {
             return JSON.stringify(d)
@@ -602,18 +604,18 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         })
         .transition().duration(1000)
         .style("fill", function(d, i) {
-            return (d.vs !== _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#00B775"
+            return (d.name !== _globalLastReply.vs[Object.keys(_globalLastReply.vs)[i]]) ? 'white' : "#00B775"
         });
 
     bars
         .append("text")
         .attr("class", "startText")
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 + padding.top + 5
         })
-        .attr("x", LEFT_COL)
+        .attr("x", LEFT_COL - 30)
         .style("alignment-baseline", "middle")
-        .style("font-size", "72px")
+        .style("font-size", "54px")
         .style("font-weight", "bold")
         .style("fill", "black")
         .text("0%");
@@ -622,14 +624,14 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         .append("text")
         .attr("class", "endText")
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 + padding.top + 5
         })
         .attr("x", innerW - 30 + LEFT_COL)
         .style("alignment-baseline", "middle")
         .style("text-anchor", "end")
-        .style("font-size", "72px")
+        .style("font-size", "54px")
         .style("font-weight", "bold")
-        .style("fill", "white")
+        .style("fill", "black")
         .text("100%");
 
     bars.selectAll(".endText")
@@ -663,10 +665,10 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         })
         .attr("x", 25)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 50
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 45 + padding.top
         })
-        .attr("width", 100)
-        .attr("height", 100)
+        .attr("width", 90)
+        .attr("height", 90)
         .style("opacity", 0)
      	.transition().delay(1500).duration(1000)
      	.style("opacity", 1);
@@ -678,10 +680,10 @@ Shiny.addCustomMessageHandler("json_vs", function(message) {
         })
         .attr("x", w - 150 - 25)
         .attr("y", function(d, i) {
-            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 50
+            return i * (barHeight + PADDING_BTWN_BARS) + barHeight / 2 - 45 + padding.top
         })
-        .attr("width", 100)
-        .attr("height", 100)
+        .attr("width", 90)
+        .attr("height", 90)
         .style("opacity", 0)
      	.transition().delay(1500).duration(1000)
      	.style("opacity", 1);

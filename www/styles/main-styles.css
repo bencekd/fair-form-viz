@@ -24,11 +24,15 @@ html, body{
 	background-color: #757575;
 } 
 
-.axis line,
-.axis path {
+.axis line {
   shape-rendering: crispEdges;
   fill: transparent;
   stroke: #fff;
+}
+.axis path {
+  shape-rendering: crispEdges;
+  fill: transparent;
+  stroke: transparent;
 }
 
 .axis.y.left text{
