@@ -22,7 +22,7 @@ const iconsFields = {
     "Mérnöki tudományok": "img/icons/fields/006-engineering.png",
     "Bölcsészettudományok": "img/icons/fields/010-humanities.png",
     "Fizika": "img/icons/fields/009-physics.png",
-    "Más természettudományok": ,"img/icons/fields/008-science.png",
+    "Más természettudományok": "img/icons/fields/008-science.png",
     "Társadalomtudomány": "img/icons/fields/007-socialscience.png"
 }
 
@@ -50,6 +50,15 @@ var _globalLastReply;
 Shiny.addCustomMessageHandler("json_lastreply", function(lastrow) {
 
     _globalLastReply = lastrow[0];
+
+    $(".sk-cube-grid")
+    	.fadeOut(3000);
+
+    $(".screen")
+    	.fadeOut(3500)
+    	.end()
+    	.find(".leaflet-control-container")
+    	.show();
 
 })
 

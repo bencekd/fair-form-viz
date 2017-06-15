@@ -1,11 +1,12 @@
-setwd("C:/Work/Hifly/recruiting/integration")
+# setwd("C:/Work/Hifly/recruiting/integration")
+
+install.packages("googlesheets")
 
 library(shiny)
 library(dplyr)
 library(tidyr)
 library(googlesheets)
 library(jsonlite)
-# library(rjson)
 library(data.tree)
 
 ## ======================

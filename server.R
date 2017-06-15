@@ -1,3 +1,12 @@
+library(shiny)
+library(dplyr)
+library(tidyr)
+library(googlesheets)
+library(jsonlite)
+library(data.tree)
+
+googleform_data_url <- "https://docs.google.com/spreadsheets/d/18K1AVk-ewfo3SoMTb0EAiY0uB09mz6uBHc438XCvxSE/pubhtml?gid=1629952826&single=true"
+
 shinyServer(function(input, output, session) {  
   ss <- gs_url(googleform_data_url, lookup = FALSE, visibility = "public")
   ss_dat <- gs_read(ss)
@@ -46,7 +55,7 @@ shinyServer(function(input, output, session) {
       # viszont ha TRUE, akkor kérünk mindent 
 
       if (input$divider == FALSE) {
-        loc_dat <- loc_dat[c(1:10,lastIndex),]
+        loc_dat <- loc_dat[c(1:38,lastIndex),]
       }
       lastIndex <- nrow(loc_dat)
       
