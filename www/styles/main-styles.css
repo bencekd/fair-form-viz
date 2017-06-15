@@ -135,7 +135,7 @@ html{
 
 .dataSwitch{
 	position: absolute;
-	bottom: 75px;
+	bottom: 125px;
 	left: 250px;
 	transform: scale(2.3);
 }

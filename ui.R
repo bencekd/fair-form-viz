@@ -39,7 +39,8 @@ shinyUI(
 	  	tags$div(class="dataSwitch",
 	  	    switchButton(inputId = "divider",
                 label = "Mindenki", 
-                value = FALSE, col = "GB", type = "OO")
+                value = FALSE, col = "GB", type = "OO"),
+	  	    tags$a(href="https://github.com/bencekd/fair-form-viz", target = "_blank", "Source & Copyright")
 	  	 )
 	  ),
 	  tags$div(class="col-md-10 container-right",
